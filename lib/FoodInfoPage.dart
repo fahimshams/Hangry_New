@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'CheckoutPage.dart';
 import 'custom-app-bar.dart';
 import 'main.dart';
-import 'Cart_Provider.dart'; // Import your cart provider file
+import 'Cart_Provider.dart';
 
 class FoodInfo {
   final String name;
@@ -32,7 +32,7 @@ class FoodInfoPage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Hungry?',
-        locationText: 'Lancaster,PA',
+        locationText: 'Lancaster, PA',
         onAccountPressed: () {
           Navigator.push(
             context,
@@ -40,6 +40,10 @@ class FoodInfoPage extends StatelessWidget {
           );
         },
         onCartPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CheckoutPage()),
+          );
           // Navigate to the cart page or perform cart-related actions
         },
         itemCount: context.watch<CartProvider>().itemCount,
@@ -66,42 +70,46 @@ class FoodInfoPage extends StatelessWidget {
             for (var cook in foodInfo.cooks)
               Card(
                 margin: EdgeInsets.only(top: 8),
-                child: ListTile(
-                  title: Text(cook.cookName),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Specialty: ${cook.specialty}'),
-                      Text('Distance from Customer: ${cook.distance} km'),
-                      Text(
-                          'Price: \$${cook.price.toStringAsFixed(2)}'), // Display the price
-                    ],
-                  ),
-                  onTap: () {
-                    // Navigate to the checkout page when a cook is selected
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CheckoutPage(cook),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(cook.cookName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Specialty: ${cook.specialty}'),
+                          Text('Distance from Customer: ${cook.distance} km'),
+                          Text(
+                              'Price: \$${cook.price.toStringAsFixed(2)}'), // Display the price
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add the selected item to the cart
+                        context
+                            .read<CartProvider>()
+                            .addItemToCart(cook.cookName, cook.price);
+
+                        // Show a snackbar or perform other actions
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added to Cart!'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                        Future.delayed(Duration(milliseconds: 1000), () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        });
+                      },
+                      child: Text('Add to Cart'),
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
               ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Add the selected item to the cart
-                context.read<CartProvider>().addItemToCart();
-                // Optionally, you can show a snackbar or perform other actions
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Added to Cart!'),
-                  ),
-                );
-              },
-              child: Text('Add to Cart'),
-            ),
           ],
         ),
       ),

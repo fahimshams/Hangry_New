@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'FoodInfoPage.dart';
 import 'CheckoutPage.dart';
 import 'custom-app-bar.dart';
-import 'Cart_Provider.dart';
 import 'package:provider/provider.dart';
+import 'Cart_Provider.dart';
 
 void main() {
   runApp(
@@ -97,6 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
         onCartPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CheckoutPage()),
+          );
           // Navigate to the cart page or perform cart-related actions
         },
         itemCount: context.watch<CartProvider>().itemCount,
